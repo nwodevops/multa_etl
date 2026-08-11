@@ -32,21 +32,14 @@ Reglas fijas del arquetipo:
 
 No hay build/test/lint: se ejecuta `workflows/wf_main.hwf` en el GUI de Apache Hop y se revisa el log. El workflow demo corre sin BDs externas: lee `DEMO_TABLA_EJEMPLO` desde H2 y la capa R omite el write a Oracle si las credenciales son placeholders.
 
-## Staging Area (Step 1) — `workflows/wf_staging.hwf`
+## Staging Area + consolidación — `workflows/wf_staging.hwf`
 
-ETL de staging de `docs/notas.txt`: resetea H2 y carga 4 fuentes a tablas `STG_*`:
+1. **Google Sheets** (`workflows/load_sheets.hwf` + `client_secret.json`) → `STG_GS1_*`, `STG_GS2_*`.
+2. **Oracle** `SISUD.VW_MULTA_COERCITIVA` → `STG_ORA_*`.
+3. **MySQL** `gappsdb.T_MVC_MULTACOERCITIVA_MC` → `STG_MYSQL_*`.
+4. **R** `consolidar_multas.R`: UNION por `FUENTE` → `REPOCSEP.RPT_MULTA_COERCITIVA` (DDL en `sql/create_ORACLE_RPT_MULTA_COERCITIVA.sql`).
 
-1. **Google Sheets** (`workflows/load_sheets.hwf` + `client_secret.json`) → `STG_GS1_MULTAS_COERCITIVAS`, `STG_GS1_ETAPAS`, `STG_GS2_MULTAS_COERCITIVAS` (`pl_gs1_multas.hpl`, `pl_gs1_etapas.hpl`, `pl_gs2_multas.hpl`).
-2. **Oracle** `SISUD.VW_MULTA_COERCITIVA` → `STG_ORA_VW_MULTA_COERCITIVA` (`pl_stage_oracle.hpl`).
-3. **MySQL** `gappsdb.T_MVC_MULTACOERCITIVA_MC` → `STG_MYSQL_T_MVC_MULTACOERCITIVA` (`pl_stage_mysql.hpl`).
-
-Prerequisitos para correr en Windows (los archivos `.bat`/rutas son Windows):
-- `client_secret.json` (service account) en la raíz del proyecto; las hojas deben estar compartidas con el email de la SA.
-- Variables `SPREADSHEET_KEY_GS1` / `SPREADSHEET_KEY_GS2` en `project-config.json`.
-- Credenciales Oracle SISUD (`CSEPDV`) y MySQL (`gapps`) ya completadas en `project-config.json` / `environments/local.json` (texto plano, no commitear ni propagar).
-- **Driver MySQL para Hop**: `mysql-connector-j-*.jar` en el `lib/` de la instalación de Hop (Hop no lo trae por defecto; el driver H2 y el Oracle suelen venir incluidos — si no, copiar `lib/ojdbc11.jar` al lib de Hop).
-- Correr el workflow **Play** sobre `workflows/wf_staging.hwf` y revisar el log (el H2 se resetea solo en cada corrida).
-- `docs/input_examples/*.xlsx` son referencia de mapeo (gitignoreados); el staging ya no los lee.
+Prerequisitos Windows: `client_secret.json`, Hop + R 4.3.3, drivers JDBC, red a Oracle/MySQL.
 
 ## Notas
 

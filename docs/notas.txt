@@ -129,6 +129,12 @@ step2) consolidar
 
 -al final esa tabla consolidada tiene que estar en este oracle REPOCSEP, crea la tabla las iniciales de la tabla es RPT, en la segunda corrida o en cada ocrrida haces un truncate pero en la primera obvio cras la tabla
 
+IMPLEMENTADO fase 1 (UNION FUENTE):
+- r/logica/consolidar_multas.R apila GS1|GS2|GS_ETAPA|ORA|MYSQL sin JOIN matched
+- destino REPOCSEP.RPT_MULTA_COERCITIVA (sql/create_ORACLE_RPT_MULTA_COERCITIVA.sql)
+- wf_staging.hwf termina en Run R
+- Fase 2 pendiente: limpieza R y puente COD_MA <-> CUM
+
 crea una tabla en Oralce 
 ###Oracle REPOCSEP
 

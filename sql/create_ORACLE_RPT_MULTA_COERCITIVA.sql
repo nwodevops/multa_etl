@@ -1,0 +1,67 @@
+-- RPT_MULTA_COERCITIVA en REPOCSEP (fase 1: UNION por FUENTE)
+-- Landing laxo: textos amplios; montos NUMBER nullable.
+-- Primera corrida: ejecutar este script (o dejar que r/io/escribir_oracle.R lo cree).
+-- Siguientes: TRUNCATE + INSERT desde R.
+
+CREATE TABLE RPT_MULTA_COERCITIVA (
+  FUENTE                VARCHAR2(20)   NOT NULL,
+  FECHA_CARGA           DATE,
+  COD_MA                VARCHAR2(500),
+  COD_PROY_MC           VARCHAR2(4000),
+  CUM                   VARCHAR2(100),
+  CAM                   VARCHAR2(100),
+  EXPEDIENTE            VARCHAR2(500),
+  ADMINISTRADO          VARCHAR2(4000),
+  UF                    VARCHAR2(4000),
+  COORD                 VARCHAR2(4000),
+  JEFE                  VARCHAR2(4000),
+  MONTO_UIT             NUMBER(18,6),
+  MONTO_S               NUMBER(18,6),
+  ESTADO                VARCHAR2(500),
+  -- seguimiento GS (GS1/GS2)
+  N_CARTA_DCG           VARCHAR2(4000),
+  FN_MC                 VARCHAR2(50),
+  F_VENC_DCG            VARCHAR2(50),
+  PRESENT_DCG_ADM       VARCHAR2(4000),
+  AMERIT_MC             VARCHAR2(4000),
+  N_RES_MC              VARCHAR2(4000),
+  F_VENC_MC             VARCHAR2(50),
+  ESTADO_MC             VARCHAR2(500),
+  F_PAGO                VARCHAR2(50),
+  RECORD_SEG            VARCHAR2(4000),
+  DOC_VERIF_MC          VARCHAR2(4000),
+  EXP_SIGED_DOC         VARCHAR2(4000),
+  ETA_REG_PROY_MC       VARCHAR2(4000),
+  ETA_REG_MC            VARCHAR2(4000),
+  N_PROY_MC             NUMBER(18,6),
+  RESULT_PROY_MC        VARCHAR2(4000),
+  -- etapas GS1
+  NRO_ETAPA_MC          NUMBER(18,6),
+  PERF_ENCARG_MC        VARCHAR2(4000),
+  ACCION_MC             VARCHAR2(4000),
+  ENCARGADO_MC          VARCHAR2(4000),
+  F_ASIG_MC             VARCHAR2(50),
+  EST_ETAPA_MC          VARCHAR2(500),
+  CONFORMIDAD_MC        VARCHAR2(4000),
+  COD_ETAPA_MC          VARCHAR2(500),
+  -- Oracle SISUD extras
+  RESOLUCION            VARCHAR2(4000),
+  FECHA_EMISION         VARCHAR2(50),
+  NUMERO_REGISTRO       VARCHAR2(500),
+  ESTADO_RESOLUCION     VARCHAR2(100),
+  MEDIDA_ADMINISTRATIVA VARCHAR2(4000),
+  MONTO_MULTA_REC       NUMBER(18,6),
+  MONTO_MULTA_TFA       NUMBER(18,6),
+  -- MySQL gapps extras
+  NU_IDMC               NUMBER(18,0),
+  TX_RECORD_SEG         VARCHAR2(4000),
+  FE_F_VERIF_POST_MC    VARCHAR2(50),
+  FG_ESTADOMULTA        VARCHAR2(50),
+  NU_IDVERIFICACIONMA   NUMBER(18,0),
+  TX_PASOACTUAL         VARCHAR2(10),
+  TX_ESTADOREGISTRO     VARCHAR2(10)
+);
+
+CREATE INDEX IDX_RPT_MC_FUENTE ON RPT_MULTA_COERCITIVA (FUENTE);
+CREATE INDEX IDX_RPT_MC_COD_MA ON RPT_MULTA_COERCITIVA (COD_MA);
+CREATE INDEX IDX_RPT_MC_CUM ON RPT_MULTA_COERCITIVA (CUM);

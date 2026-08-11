@@ -72,33 +72,33 @@
     },
     {
       "name": "DB_ORA_REPO_URL",
-      "value": "jdbc:oracle:thin:@//<HOST>:<PUERTO>/<SERVICE>",
-      "description": "JDBC URL Oracle REPOCSEP (destino) LOCAL - completar"
+      "value": "jdbc:oracle:thin:@//10.6.0.15:1532/dvoefacore",
+      "description": "JDBC URL Oracle REPOCSEP (destino) LOCAL"
     },
     {
       "name": "DB_ORA_REPO_HOST",
-      "value": "<HOST>",
-      "description": "Host Oracle REPOCSEP (destino) LOCAL - completar"
+      "value": "10.6.0.15",
+      "description": "Host Oracle REPOCSEP (destino) LOCAL"
     },
     {
       "name": "DB_ORA_REPO_PORT",
-      "value": "<PUERTO>",
-      "description": "Puerto Oracle REPOCSEP (destino) LOCAL - completar"
+      "value": "1532",
+      "description": "Puerto Oracle REPOCSEP (destino) LOCAL"
     },
     {
       "name": "DB_ORA_REPO_DATABASE",
-      "value": "<SERVICE>",
-      "description": "Service Oracle REPOCSEP (destino) LOCAL - completar"
+      "value": "dvoefacore",
+      "description": "Service Oracle REPOCSEP (destino) LOCAL"
     },
     {
       "name": "DB_ORA_REPO_USERNAME",
-      "value": "<USUARIO>",
-      "description": "Usuario Oracle REPOCSEP (destino) LOCAL - completar"
+      "value": "REPOCSEP",
+      "description": "Usuario Oracle REPOCSEP (destino) LOCAL"
     },
     {
       "name": "DB_ORA_REPO_PASSWORD",
-      "value": "<PASSWORD>",
-      "description": "Password Oracle REPOCSEP (destino) LOCAL - completar"
+      "value": "desarrollo24",
+      "description": "Password Oracle REPOCSEP (destino) LOCAL"
     },
     {
       "name": "DB_MYSQL_URL",

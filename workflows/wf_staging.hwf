@@ -2,7 +2,7 @@
 <workflow>
   <name>wf_staging</name>
   <name_sync_with_filename>Y</name_sync_with_filename>
-  <description>Step 1 Staging Area: reset H2 + carga de las 4 fuentes (Google Sheets via load_sheets, Oracle VW_MULTA_COERCITIVA, MySQL T_MVC_MULTACOERCITIVA_MC) a tablas STG_*</description>
+  <description>Step 1+2: reset H2 + staging 4 fuentes + R UNION FUENTE -&gt; REPOCSEP.RPT_MULTA_COERCITIVA</description>
   <extended_description/>
   <workflow_version/>
   <created_user>-</created_user>
@@ -140,12 +140,38 @@ call h2\scripts\reset_and_create.bat
       <attributes_hac/>
     </action>
     <action>
+      <name>Run R</name>
+      <description>Rscript r/main.R: STG_* -&gt; consolidar_multas (UNION FUENTE) -&gt; REPOCSEP.RPT_MULTA_COERCITIVA</description>
+      <type>SHELL</type>
+      <attributes/>
+      <filename/>
+      <work_directory>${PROJECT_HOME}</work_directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <set_append_logfile>N</set_append_logfile>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <insertScript>Y</insertScript>
+      <script>@echo off
+cd /d "${PROJECT_HOME}"
+"C:\Program Files\R\R-4.3.3\bin\Rscript.exe" r/main.R
+</script>
+      <loglevel>Basic</loglevel>
+      <parallel>N</parallel>
+      <xloc>880</xloc>
+      <yloc>192</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
       <name>Success</name>
       <description/>
       <type>SUCCESS</type>
       <attributes/>
       <parallel>N</parallel>
-      <xloc>912</xloc>
+      <xloc>1040</xloc>
       <yloc>192</yloc>
       <attributes_hac/>
     </action>
@@ -181,6 +207,13 @@ call h2\scripts\reset_and_create.bat
     </hop>
     <hop>
       <from>Pipeline MySQL</from>
+      <to>Run R</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Run R</from>
       <to>Success</to>
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
@@ -202,13 +235,13 @@ call h2\scripts\reset_and_create.bat
       <fontitalic>N</fontitalic>
       <fontname>Segoe UI</fontname>
       <fontsize>11</fontsize>
-      <height>90</height>
+      <height>100</height>
       <xloc>48</xloc>
       <yloc>48</yloc>
-      <note>Staging Area (Step 1 de docs/notas.txt). H2 in-memory se resetea en cada corrida.
-Orden: Reset H2 -> load_sheets.hwf (Google Sheets + client_secret.json) -> Oracle VW_MULTA_COERCITIVA -> MySQL T_MVC_MULTACOERCITIVA_MC.
-docs/input_examples/*.xlsx quedan solo como referencia de mapeo.</note>
-      <width>700</width>
+      <note>Step 1 staging + Step 2 R UNION (FUENTE) -&gt; RPT_MULTA_COERCITIVA.
+Orden: Reset H2 -&gt; load_sheets -&gt; Oracle -&gt; MySQL -&gt; Run R (consolidar_multas.R).
+Fase 1: apila GS1/GS2/ETAPA/ORA/MYSQL sin JOIN matched. Limpieza = fase 2.</note>
+      <width>720</width>
     </notepad>
   </notepads>
   <attributes/>

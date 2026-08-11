@@ -1,54 +1,30 @@
 # CONTRATO — capa R del arquetipo Apache Hop + H2
 
-El proyecto es un **arquetipo**: el I/O es genérico y reutilizable; solo se cambia la
-**lógica de negocio** pegando un `.R` en `r/logica/`. Cualquier lógica nueva (R o Python
-en el futuro) debe respetar este contrato de entrada y salida.
-
 ```
 r/main.R            orquesta: SETUP → io/leer_h2.R → [único .R de logica/] → io/escribir_oracle.R
-r/io/leer_h2.R      ENTRADA genérica : H2 mem:csep → data.frames (nombres = claves de `lecturas`)
-r/logica/           LOGICA de negocio : zona de pegado (un solo .R), entrada/salida en entorno
-r/io/escribir_oracle.R  SALIDA genérica: data.frame → tabla Oracle (TRUNCATE+INSERT; skip si placeholders)
+r/io/leer_h2.R      ENTRADA: H2 STG_* → data.frames GS1, GS2, ETAPAS, ORA, MYSQL
+r/logica/           LOGICA: consolidar_multas.R (UNION FUENTE → RESULTADO)
+r/io/escribir_oracle.R  SALIDA: RESULTADO → REPOCSEP.RPT_MULTA_COERCITIVA (CREATE si falta + TRUNCATE+INSERT)
 ```
 
-## Entrada (la deja `r/io/leer_h2.R`)
+## Entrada (`r/io/leer_h2.R`)
 
-Cada clave de la lista `lecturas` (en `leer_h2.R`) se convierte en un data.frame con
-**ese mismo nombre** en el entorno. La lógica recibe esos data.frames ya cargados.
-
-| Nombre | Fuente (query en `leer_h2.R`) |
+| Nombre | Fuente H2 |
 |---|---|
-| `DEMO` | `SELECT ID, TXNOMBRE, FEALTA FROM PUBLIC.DEMO_TABLA_EJEMPLO` |
+| `GS1` | `STG_GS1_MULTAS_COERCITIVAS` |
+| `GS2` | `STG_GS2_MULTAS_COERCITIVAS` |
+| `ETAPAS` | `STG_GS1_ETAPAS` |
+| `ORA` | `STG_ORA_VW_MULTA_COERCITIVA` |
+| `MYSQL` | `STG_MYSQL_T_MVC_MULTACOERCITIVA` |
 
-Para un ETL nuevo, agregar/editar entradas en `lecturas`; los nombres pasan a ser el
-contrato de entrada de tu lógica.
+## Salida
 
-## Salida (la consume `r/io/escribir_oracle.R`)
+Data.frame **`RESULTADO`** con columna `FUENTE` (`GS1`|`GS2`|`GS_ETAPA`|`ORA`|`MYSQL`) y esquema alineado a `sql/create_ORACLE_RPT_MULTA_COERCITIVA.sql`.
 
-La lógica debe dejar en el entorno un data.frame con el nombre de `SALIDA_DF`
-(default **`RESULTADO`**, configurable en `r/main.R`). Columnas/tipos deben mapear a la
-tabla destino.
-
-El escritor normaliza antes de insertar (factores→character, Date→ISO string) y hace
-`ALTER SESSION NLS_DATE_FORMAT` + `TRUNCATE` + `INSERT` + `COUNT`. Si las credenciales
-Oracle son placeholders, omite el write con warning (smoke test H2-only).
-
-## Cómo crear otro ETL en este arquetipo
-
-1. Copiar `r/plantilla_logica.R` → `r/logica/<tu_logica>.R` (**un solo .R** en esa carpeta).
-2. Escribir tu transformación usando los data.frames de entrada (nombres de `lecturas`)
-   y dejar el data.frame `RESULTADO`.
-3. Completar tabla/esquema/credenciales en la llamada a `escribir_oracle()` (o sus defaults
-   en `r/io/escribir_oracle.R`).
-4. Reutilizar `r/io/` y `r/main.R` sin tocarlos. Para portar a Python, replicar este
-   contrato con el mismo nombre de data.frames/columnas.
+Escritor: CREATE si no existe → TRUNCATE → INSERT en `REPOCSEP.RPT_MULTA_COERCITIVA`.
 
 ## Reglas
 
-- **Aislamiento de la lógica**: en `r/logica/` no se abren conexiones, no se cargan jars
-  ni `library()`, no se usan rutas de archivo. Solo dplyr/base sobre los data.frames del
-  entorno.
-- **No mover** la línea `options(java.parameters=...)` en `r/main.R`: debe ejecutarse
-  **antes** de `library(RJDBC)`/`rJava`.
-- **No dejar** credenciales reales como defaults del arquetipo: completar los `<...>` por
-  proyecto. Los passwords quedan en texto plano en el repo (igual que `project-config.json`).
+- En `r/logica/` no hay conexiones ni `library()`; solo dplyr/base sobre data.frames.
+- No mover `options(java.parameters=...)` en `r/main.R` (antes de RJDBC).
+- Fase 1 = apilado sin JOIN matched Sheets↔SISUD. Limpieza/puente `COD_MA`↔`CUM` = fase 2.

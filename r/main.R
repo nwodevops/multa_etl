@@ -83,6 +83,10 @@ message("Salida de logica: ", nrow(df_salida), " filas x ", ncol(df_salida), " c
 # 4. SALIDA (df -> Oracle REPOCSEP; skip si credenciales placeholder)
 # ---------------------------------------------------------------------------
 source(file.path(root, "r", "io", "escribir_oracle.R"))
-escribir_oracle(df_salida, ojdbc_jar = ojdbc_jar)
+escribir_oracle(
+  df_salida,
+  ojdbc_jar = ojdbc_jar,
+  ddl_path = file.path(root, "sql", "create_ORACLE_RPT_MULTA_COERCITIVA.sql")
+)
 
-message("Listo (H2 -> logica -> destino).")
+message("Listo (H2 -> logica -> REPOCSEP.RPT_MULTA_COERCITIVA).")

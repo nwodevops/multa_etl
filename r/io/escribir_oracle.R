@@ -1,34 +1,23 @@
 # =============================================================================
 # io/escribir_oracle.R
-# SALIDA generica del arquetipo: data.frame -> tabla Oracle (TRUNCATE + INSERT)
-#
-# Normaliza generosamente antes de escribir:
-#   - factores -> character
-#   - columnas Date -> string ISO "%Y-%m-%d %H:%M:%S" (combina con ALTER SESSION
-#     NLS_DATE_FORMAT para evitar ORA-01861)
-#   - ALTER SESSION NLS_DATE_FORMAT + TRUNCATE + dbWriteTable(append) + COUNT
-#
-# CREDENCIALES: completar aqui los defaults del proyecto (texto plano, igual que
-# project-config.json). Si url/user/password quedan como "<...>" (placeholders),
-# el write se OMITE con un warning -> permite smoke test H2-only sin Oracle.
-#
-# Uso:
-#   source(file.path(root, "r", "io", "escribir_oracle.R"))
-#   escribir_oracle(df, ojdbc_jar = ojdbc_jar)
+# SALIDA: data.frame -> Oracle REPOCSEP.RPT_MULTA_COERCITIVA
+#   - CREATE TABLE si no existe (sql/create_ORACLE_RPT_MULTA_COERCITIVA.sql)
+#   - TRUNCATE + INSERT
+# Si url/user/password son placeholders "<...>", omite el write (smoke H2-only).
 # =============================================================================
 
 escribir_oracle <- function(df,
-                            tabla = "MI_TABLA",
-                            esquema = "MI_ESQUEMA",
-                            url = "<DB_ORA_REPO_URL>",
-                            user = "<USUARIO>",
-                            password = "<PASSWORD>",
-                            ojdbc_jar) {
+                            tabla = "RPT_MULTA_COERCITIVA",
+                            esquema = "REPOCSEP",
+                            url = "jdbc:oracle:thin:@//10.6.0.15:1532/dvoefacore",
+                            user = "REPOCSEP",
+                            password = "desarrollo24",
+                            ojdbc_jar,
+                            ddl_path = NULL) {
   if (missing(ojdbc_jar) || !file.exists(ojdbc_jar)) {
     stop("No se encuentra ojdbc_jar: ", ojdbc_jar)
   }
 
-  # Skip si las credenciales siguen siendo placeholders (sin Oracle configurado)
   if (grepl("^<", url) || grepl("^<", user) || grepl("^<", password)) {
     message("AVISO: credenciales Oracle placeholder -> se OMITE el write (tabla ",
             esquema, ".", tabla, ").")
@@ -39,7 +28,9 @@ escribir_oracle <- function(df,
   out <- df
   out[] <- lapply(out, function(x) if (is.factor(x)) as.character(x) else x)
   for (nm in names(out)) {
-    if (inherits(out[[nm]], "Date")) {
+    if (inherits(out[[nm]], "POSIXct") || inherits(out[[nm]], "POSIXt")) {
+      out[[nm]] <- format(out[[nm]], "%Y-%m-%d %H:%M:%S")
+    } else if (inherits(out[[nm]], "Date")) {
       out[[nm]] <- format(out[[nm]], "%Y-%m-%d %H:%M:%S")
     }
   }
@@ -50,13 +41,42 @@ escribir_oracle <- function(df,
   on.exit(try(DBI::dbDisconnect(con), silent = TRUE), add = TRUE)
 
   RJDBC::dbSendUpdate(con, "ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS'")
-  RJDBC::dbSendUpdate(con, paste("TRUNCATE TABLE ", esquema, ".", tabla, sep = ""))
+
+  # CREATE si no existe (tabla en el esquema del usuario conectado = REPOCSEP)
+  n_tbl <- DBI::dbGetQuery(
+    con,
+    paste0(
+      "SELECT COUNT(*) AS N FROM user_tables WHERE table_name = '",
+      toupper(tabla), "'"
+    )
+  )$N
+  if (is.na(n_tbl) || as.integer(n_tbl) == 0L) {
+    if (is.null(ddl_path)) {
+      root_guess <- normalizePath(file.path(dirname(ojdbc_jar), ".."), mustWork = FALSE)
+      ddl_path <- file.path(root_guess, "sql", "create_ORACLE_RPT_MULTA_COERCITIVA.sql")
+    }
+    if (!file.exists(ddl_path)) {
+      stop("Tabla ", tabla, " no existe y no se encuentra DDL: ", ddl_path)
+    }
+    message("Creando tabla ", esquema, ".", tabla, " desde ", ddl_path)
+    ddl <- paste(readLines(ddl_path, warn = FALSE), collapse = "\n")
+    # quitar comentarios de linea y partir por ;
+    ddl <- gsub("--[^\n]*", "\n", ddl)
+    stmts <- trimws(unlist(strsplit(ddl, ";")))
+    stmts <- stmts[nzchar(stmts)]
+    for (st in stmts) {
+      RJDBC::dbSendUpdate(con, st)
+    }
+  }
+
+  fq <- paste0(esquema, ".", tabla)
+  RJDBC::dbSendUpdate(con, paste0("TRUNCATE TABLE ", fq))
   DBI::dbWriteTable(con, tabla, out, overwrite = FALSE, append = TRUE, row.names = FALSE)
 
-  n_out <- DBI::dbGetQuery(con, paste("SELECT COUNT(*) AS N FROM ", esquema, ".", tabla, sep = ""))$N
+  n_out <- DBI::dbGetQuery(con, paste0("SELECT COUNT(*) AS N FROM ", fq))$N
   DBI::dbDisconnect(con)
   on.exit(NULL)
 
-  message(tabla, ": ", nrow(out), " filas -> ", esquema, ".", tabla, " (", n_out, " en BD)")
+  message(tabla, ": ", nrow(out), " filas -> ", fq, " (", n_out, " en BD)")
   invisible(n_out)
 }

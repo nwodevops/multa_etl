@@ -5,29 +5,32 @@ Proyecto ETL en **Apache Hop** (OEFA). No hay build/test/lint: la verificación 
 ## Ejecución y flujo
 
 - **Smoke test del arquetipo**: `workflows/wf_main.hwf`. Cadena: `Reset H2 clean` (SHELL) → `Pipeline demo` → `Run R` → `Success`.
-- **ETL real (Step 1, staging)**: `workflows/wf_staging.hwf`. Cadena: `Reset H2 clean` → `load_sheets.hwf` (Google Sheets → H2) → `Pipeline Oracle` → `Pipeline MySQL` → `Success`.
+- **ETL real (Step 1+2)**: `workflows/wf_staging.hwf`. Cadena: `Reset H2 clean` → `load_sheets.hwf` → `Pipeline Oracle` → `Pipeline MySQL` → `Run R` (`consolidar_multas.R` UNION `FUENTE` → `REPOCSEP.RPT_MULTA_COERCITIVA`) → `Success`.
 - Cada corrida **resetea la BD H2** (stop + start + DDL) vía `h2/scripts/reset_and_create.bat`; el DDL de staging vive en `h2/sql/01_schema.sql`.
-- Archivos `.hpl`/`.hwf` son XML con variables `${PROJECT_HOME}`. Los XML se editan a mano siguiendo el esquema del código fuente de Hop (ver `plugins/transforms/excel-input` y `table-output` en apache/hop: keys `startrow`/`header`/`field`, y `connection`/`schema`/`table`/`truncate`).
+- Archivos `.hpl`/`.hwf` son XML con variables `${PROJECT_HOME}`.
 
 ## Staging (Step 1 de `docs/notas.txt`)
 
 - **5 tablas** `STG_*` en H2 (landing nullable, sin PK, en `01_schema.sql`): `STG_GS1_MULTAS_COERCITIVAS` (48 cols), `STG_GS1_ETAPAS` (12), `STG_GS2_MULTAS_COERCITIVAS` (32), `STG_ORA_VW_MULTA_COERCITIVA` (13), `STG_MYSQL_T_MVC_MULTACOERCITIVA` (18).
 - **Fuentes**:
-  - Google Sheets vía `workflows/load_sheets.hwf` (patrón `nefa_hop`): `pl_gs1_multas.hpl`, `pl_gs1_etapas.hpl`, `pl_gs2_multas.hpl` con `GoogleSheetsInput` → H2. Credencial: `${PROJECT_HOME}/client_secret.json`. Keys: `SPREADSHEET_KEY_GS1`, `SPREADSHEET_KEY_GS2`. El `worksheetId` es un rango A1 que empieza en la **fila de códigos** (fila 3 en Multas, fila 2 en Etapas); Hop salta esa fila como header.
-  - `docs/input_examples/*.xlsx` son solo referencia de mapeo (y `pipelines/pl_stage_gs.hpl` legacy Excel).
-  - Oracle `SISUD.VW_MULTA_COERCITIVA` → `pl_stage_oracle.hpl` (conexión `oracle_sisud`).
-  - MySQL `gappsdb.T_MVC_MULTACOERCITIVA_MC` → `pl_stage_mysql.hpl` (conexión `mysql`).
-- **Credenciales reales** Oracle (`CSEPDV`) y MySQL (`gapps`) ya completadas en `project-config.json` y `environments/local.json` (texto plano: no commitear ni propagar). REPOCSEP (destino) sigue placeholder.
-- **Pendiente**: capa de lógica (R en `r/logica/`) después del staging.
+  - Google Sheets vía `workflows/load_sheets.hwf` (patrón `nefa_hop`): `pl_gs1_multas.hpl`, `pl_gs1_etapas.hpl`, `pl_gs2_multas.hpl` con `GoogleSheetsInput` → H2. Credencial: `${PROJECT_HOME}/client_secret.json`. Keys: `SPREADSHEET_KEY_GS1`, `SPREADSHEET_KEY_GS2`.
+  - Oracle `SISUD.VW_MULTA_COERCITIVA` → `pl_stage_oracle.hpl`.
+  - MySQL `gappsdb.T_MVC_MULTACOERCITIVA_MC` → `pl_stage_mysql.hpl`.
+
+## Consolidación R (Step 2, fase 1 — UNION FUENTE)
+
+- Lógica: `r/logica/consolidar_multas.R` (único `.R` en `r/logica/`).
+- Entrada: `GS1`, `GS2`, `ETAPAS`, `ORA`, `MYSQL` desde `r/io/leer_h2.R`.
+- Salida: `REPOCSEP.RPT_MULTA_COERCITIVA` (`sql/create_ORACLE_RPT_MULTA_COERCITIVA.sql`). CREATE si falta; luego TRUNCATE+INSERT.
+- **No hay JOIN matched** Sheets↔Oracle/MySQL en esta fase (`COD_MA` ≠ `CUM`). Filtrar por `FUENTE` en consumo.
+- **Fase 2 (pendiente)**: limpieza R, normalizar `COD_PROY_MC`, agregar etapas, puente `COD_MA`↔`CUM` si negocio lo define.
 
 ## Capa R (lógica aislada)
 
-- La lógica de negocio vive en `r/logica/`: **zona de pegado** con un solo `.R` (auto-descubierto por `r/main.R`; error si hay 0 o más de 1). Copy-paste ahí y corre.
-- Entrada: data.frames ya cargados con los nombres de la lista `lecturas` en `r/io/leer_h2.R`. Salida: data.frame `RESULTADO` (`SALIDA_DF` configurable en `main.R`). Ver `r/CONTRATO.md`.
-- Aislamiento: en `r/logica/` no hay conexiones ni jars ni `library()`; el I/O vive en `r/io/`.
-- **No mover** la línea `options(java.parameters=...)` en `r/main.R`: va **antes** de `library(RJDBC)`/`rJava`.
-- Prerequisitos: R 4.3.3 (ruta Rscript hardcodeada en el workflow), paquetes `RJDBC, dplyr, stringr, tidyr, lubridate` en `~/R/library`, `lib/ojdbc11.jar` para write a Oracle.
-- Si las credenciales Oracle en `r/io/escribir_oracle.R` quedan como `<...>`, el write se omite con warning → smoke test H2-only.
+- Zona de pegado `r/logica/` con un solo `.R` (auto-descubierto por `r/main.R`).
+- Ver `r/CONTRATO.md`.
+- Prerequisitos: R 4.3.3 (ruta Rscript hardcodeada en el workflow), paquetes `RJDBC, dplyr, stringr, tidyr, lubridate` en `~/R/library`, `lib/ojdbc11.jar`.
+- Destino REPOCSEP ya configurado en `r/io/escribir_oracle.R` / `project-config.json` (`DB_ORA_REPO_*`).
 
 ## H2 (server local, in-memory)
 
