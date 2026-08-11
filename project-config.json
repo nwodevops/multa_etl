@@ -38,33 +38,33 @@
       },
       {
         "name": "DB_ORA_SISUD_URL",
-        "value": "jdbc:oracle:thin:@//<HOST>:<PUERTO>/<SERVICE>",
-        "description": "JDBC URL Oracle oefabd (SISUD, fuente) - completar"
+        "value": "jdbc:oracle:thin:@//odaprod-scan:1534/oefabd",
+        "description": "JDBC URL Oracle oefabd (SISUD, fuente)"
       },
       {
         "name": "DB_ORA_SISUD_HOST",
-        "value": "<HOST>",
-        "description": "Host Oracle oefabd (SISUD, fuente) - completar"
+        "value": "odaprod-scan",
+        "description": "Host Oracle oefabd (SISUD, fuente)"
       },
       {
         "name": "DB_ORA_SISUD_PORT",
-        "value": "<PUERTO>",
-        "description": "Puerto Oracle oefabd (SISUD, fuente) - completar"
+        "value": "1534",
+        "description": "Puerto Oracle oefabd (SISUD, fuente)"
       },
       {
         "name": "DB_ORA_SISUD_DATABASE",
-        "value": "<SERVICE>",
-        "description": "Service Oracle oefabd (SISUD, fuente) - completar"
+        "value": "oefabd",
+        "description": "Service Oracle oefabd (SISUD, fuente)"
       },
       {
         "name": "DB_ORA_SISUD_USERNAME",
-        "value": "<USUARIO>",
-        "description": "Usuario Oracle oefabd (SISUD, fuente) - completar"
+        "value": "CSEPDV",
+        "description": "Usuario Oracle oefabd (SISUD, fuente)"
       },
       {
         "name": "DB_ORA_SISUD_PASSWORD",
-        "value": "<PASSWORD>",
-        "description": "Password Oracle oefabd (SISUD, fuente) - completar"
+        "value": "vWqFlNPWZQ0Fov",
+        "description": "Password Oracle oefabd (SISUD, fuente)"
       },
       {
         "name": "DB_ORA_REPO_URL",
@@ -98,33 +98,33 @@
       },
       {
         "name": "DB_MYSQL_URL",
-        "value": "jdbc:mysql://<HOST>:<PUERTO>/<DB>",
-        "description": "JDBC URL MySQL (completar)"
+        "value": "jdbc:mysql://10.1.1.217:3306/gappsdb",
+        "description": "JDBC URL MySQL"
       },
       {
         "name": "DB_MYSQL_HOST",
-        "value": "<HOST>",
-        "description": "Host MySQL (completar)"
+        "value": "10.1.1.217",
+        "description": "Host MySQL"
       },
       {
         "name": "DB_MYSQL_PORT",
-        "value": "<PUERTO>",
-        "description": "Puerto MySQL (completar)"
+        "value": "3306",
+        "description": "Puerto MySQL"
       },
       {
         "name": "DB_MYSQL_DATABASE",
-        "value": "<DB>",
-        "description": "Database MySQL (completar)"
+        "value": "gappsdb",
+        "description": "Database MySQL"
       },
       {
         "name": "DB_MYSQL_USERNAME",
-        "value": "<USUARIO>",
-        "description": "Usuario MySQL (completar)"
+        "value": "gapps",
+        "description": "Usuario MySQL"
       },
       {
         "name": "DB_MYSQL_PASSWORD",
-        "value": "<PASSWORD>",
-        "description": "Password MySQL (completar)"
+        "value": "Knjux4a9tJCbrly!",
+        "description": "Password MySQL"
       }
     ]
   }
