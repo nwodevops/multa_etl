@@ -25,7 +25,7 @@ INSERT INTO DEMO_TABLA_EJEMPLO (ID, TXNOMBRE, FEALTA) VALUES
 
 -- ============================================================
 -- STAGING STEP 1 (docs/notas.txt) - tablas stage del ETL
--- Fuentes: Google Sheets (2 xlsx de ejemplo en docs/input_examples/),
+-- Fuentes: Google Sheets (load_sheets.hwf + client_secret.json),
 --          vista Oracle SISUD.VW_MULTA_COERCITIVA,
 --          tabla MySQL gappsdb.T_MVC_MULTACOERCITIVA_MC.
 -- Convencion: STG_<origen>_<entidad>; todas nullable (landing tolerante).

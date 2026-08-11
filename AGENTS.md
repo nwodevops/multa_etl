@@ -5,7 +5,7 @@ Proyecto ETL en **Apache Hop** (OEFA). No hay build/test/lint: la verificación 
 ## Ejecución y flujo
 
 - **Smoke test del arquetipo**: `workflows/wf_main.hwf`. Cadena: `Reset H2 clean` (SHELL) → `Pipeline demo` → `Run R` → `Success`.
-- **ETL real (Step 1, staging)**: `workflows/wf_staging.hwf`. Cadena: `Reset H2 clean` → `Pipeline GS` → `Pipeline Oracle` → `Pipeline MySQL` → `Success`.
+- **ETL real (Step 1, staging)**: `workflows/wf_staging.hwf`. Cadena: `Reset H2 clean` → `load_sheets.hwf` (Google Sheets → H2) → `Pipeline Oracle` → `Pipeline MySQL` → `Success`.
 - Cada corrida **resetea la BD H2** (stop + start + DDL) vía `h2/scripts/reset_and_create.bat`; el DDL de staging vive en `h2/sql/01_schema.sql`.
 - Archivos `.hpl`/`.hwf` son XML con variables `${PROJECT_HOME}`. Los XML se editan a mano siguiendo el esquema del código fuente de Hop (ver `plugins/transforms/excel-input` y `table-output` en apache/hop: keys `startrow`/`header`/`field`, y `connection`/`schema`/`table`/`truncate`).
 
@@ -13,11 +13,12 @@ Proyecto ETL en **Apache Hop** (OEFA). No hay build/test/lint: la verificación 
 
 - **5 tablas** `STG_*` en H2 (landing nullable, sin PK, en `01_schema.sql`): `STG_GS1_MULTAS_COERCITIVAS` (48 cols), `STG_GS1_ETAPAS` (12), `STG_GS2_MULTAS_COERCITIVAS` (32), `STG_ORA_VW_MULTA_COERCITIVA` (13), `STG_MYSQL_T_MVC_MULTACOERCITIVA` (18).
 - **Fuentes**:
-  - Google Sheets → por ahora los 2 xlsx de `docs/input_examples/` (`pipelines/pl_stage_gs.hpl`, `Excel Input → H2`). El header es la **fila de códigos** (fila 3 en "1)" y "5)", fila 2 en "2) Etapas"); el Excel Input de Hop NO auto-descubre campos: hay que declarar `<field>` explícitos (ya están).
+  - Google Sheets vía `workflows/load_sheets.hwf` (patrón `nefa_hop`): `pl_gs1_multas.hpl`, `pl_gs1_etapas.hpl`, `pl_gs2_multas.hpl` con `GoogleSheetsInput` → H2. Credencial: `${PROJECT_HOME}/client_secret.json`. Keys: `SPREADSHEET_KEY_GS1`, `SPREADSHEET_KEY_GS2`. El `worksheetId` es un rango A1 que empieza en la **fila de códigos** (fila 3 en Multas, fila 2 en Etapas); Hop salta esa fila como header.
+  - `docs/input_examples/*.xlsx` son solo referencia de mapeo (y `pipelines/pl_stage_gs.hpl` legacy Excel).
   - Oracle `SISUD.VW_MULTA_COERCITIVA` → `pl_stage_oracle.hpl` (conexión `oracle_sisud`).
   - MySQL `gappsdb.T_MVC_MULTACOERCITIVA_MC` → `pl_stage_mysql.hpl` (conexión `mysql`).
 - **Credenciales reales** Oracle (`CSEPDV`) y MySQL (`gapps`) ya completadas en `project-config.json` y `environments/local.json` (texto plano: no commitear ni propagar). REPOCSEP (destino) sigue placeholder.
-- **Pendiente**: descarga real desde Google Sheets (usando `client_secret.json` service account, hoy solo se leen los xlsx de ejemplo) y la capa de lógica (R en `r/logica/`) después del staging.
+- **Pendiente**: capa de lógica (R en `r/logica/`) después del staging.
 
 ## Capa R (lógica aislada)
 

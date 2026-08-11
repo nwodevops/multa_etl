@@ -37,6 +37,16 @@
         "description": "Password H2"
       },
       {
+        "name": "SPREADSHEET_KEY_GS1",
+        "value": "1ygwbxGJ_PwIuNh2iZACy2CcTYnuBDY5XjQYRjIzoQyo",
+        "description": "Google Sheets GS1: CAGR MA OEFA - Multas coercitivas (hojas 1 y 2)"
+      },
+      {
+        "name": "SPREADSHEET_KEY_GS2",
+        "value": "1hMTJkPgZ1z7WI77IhPP87b09PIoYFNCP7mhcXaD6XPM",
+        "description": "Google Sheets GS2: Medidas Administrativas OD Lambayeque (hoja 5 Multas)"
+      },
+      {
         "name": "DB_ORA_SISUD_URL",
         "value": "jdbc:oracle:thin:@//odaprod-scan:1534/oefabd",
         "description": "JDBC URL Oracle oefabd (SISUD, fuente)"

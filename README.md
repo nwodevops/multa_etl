@@ -36,15 +36,17 @@ No hay build/test/lint: se ejecuta `workflows/wf_main.hwf` en el GUI de Apache H
 
 ETL de staging de `docs/notas.txt`: resetea H2 y carga 4 fuentes a tablas `STG_*`:
 
-1. **Google Sheets** (por ahora los 2 xlsx de `docs/input_examples/`) → `STG_GS1_MULTAS_COERCITIVAS`, `STG_GS1_ETAPAS`, `STG_GS2_MULTAS_COERCITIVAS` (`pipelines/pl_stage_gs.hpl`).
+1. **Google Sheets** (`workflows/load_sheets.hwf` + `client_secret.json`) → `STG_GS1_MULTAS_COERCITIVAS`, `STG_GS1_ETAPAS`, `STG_GS2_MULTAS_COERCITIVAS` (`pl_gs1_multas.hpl`, `pl_gs1_etapas.hpl`, `pl_gs2_multas.hpl`).
 2. **Oracle** `SISUD.VW_MULTA_COERCITIVA` → `STG_ORA_VW_MULTA_COERCITIVA` (`pl_stage_oracle.hpl`).
 3. **MySQL** `gappsdb.T_MVC_MULTACOERCITIVA_MC` → `STG_MYSQL_T_MVC_MULTACOERCITIVA` (`pl_stage_mysql.hpl`).
 
 Prerequisitos para correr en Windows (los archivos `.bat`/rutas son Windows):
-- Los 2 xlsx deben existir en `docs/input_examples/` (**están gitignoreados**: no viajan en un `git clone`, se copian a mano).
+- `client_secret.json` (service account) en la raíz del proyecto; las hojas deben estar compartidas con el email de la SA.
+- Variables `SPREADSHEET_KEY_GS1` / `SPREADSHEET_KEY_GS2` en `project-config.json`.
 - Credenciales Oracle SISUD (`CSEPDV`) y MySQL (`gapps`) ya completadas en `project-config.json` / `environments/local.json` (texto plano, no commitear ni propagar).
 - **Driver MySQL para Hop**: `mysql-connector-j-*.jar` en el `lib/` de la instalación de Hop (Hop no lo trae por defecto; el driver H2 y el Oracle suelen venir incluidos — si no, copiar `lib/ojdbc11.jar` al lib de Hop).
 - Correr el workflow **Play** sobre `workflows/wf_staging.hwf` y revisar el log (el H2 se resetea solo en cada corrida).
+- `docs/input_examples/*.xlsx` son referencia de mapeo (gitignoreados); el staging ya no los lee.
 
 ## Notas
 

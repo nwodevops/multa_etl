@@ -3,7 +3,7 @@
   <info>
     <name>pl_stage_gs</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
-    <description>Staging GS: 3 hojas Excel de ejemplo -> H2 (STG_GS1_MULTAS_COERCITIVAS, STG_GS1_ETAPAS, STG_GS2_MULTAS_COERCITIVAS)</description>
+    <description>LEGACY Excel: staging desde docs/input_examples/*.xlsx. Preferir workflows/load_sheets.hwf (GoogleSheetsInput).</description>
     <extended_description/>
     <pipeline_version/>
     <pipeline_type>Normal</pipeline_type>
