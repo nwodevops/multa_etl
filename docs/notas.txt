@@ -1,0 +1,61 @@
+
+vamos a crear un etl 
+
+Step1) Stagging Area 
+
+-descargar los inputs en el stage de h2 , crea las tablas usa bat/sheell , este tdl se desplegara en windows , pero  estamos en linux de momento ahora 
+tenemos 4 inputs
+
+-2 excel, 1 una vista oracle , 1 tabla mysql
+
+
+1)Primer Input, google sheets
+-descarga , de google sheet los datos a tablas h2 
+-usa client_scret.json
+-excel plantilla descargados : /docs/input_examples of excel, te estoy dando los excel, para que te sirva de input para mapear 
+ -crea los scripts para de las tablas en h2, 
+
+-google sheets
+
+
+  1) nombre excel ejemplo  : """CAGR: MA OEFA - 3) MULTAS COERCITIVAS
+  1ygwbxGJ_PwIuNh2iZACy2CcTYnuBDY5XjQYRjIzoQyo
+  contexto : 
+    -se debe descargar los dos whorshetts
+    -one table by whorsheet 
+
+  2) nombre excel ejemplo  : ""MEDIDAS ADMINISTRATIVAS OD LAMBAYEQUE.xlsx
+  1hMTJkPgZ1z7WI77IhPP87b09PIoYFNCP7mhcXaD6XPM/edit?gid=574871197
+  contexto : 
+    -descargar el whorsheet de nombre : 5) Multas Coarcitivas
+    -one table by whorsheet 
+    
+2) Oracle 
+    tabla : VW_MULTA_COERCITIVA;
+3) mysql 
+      gappsdb.T_MVC_MULTACOERCITIVA_mc
+
+
+Datos de  conexion
+
+
+
+
+###Oracle oefabd
+
+Hot : odaprod-scan
+Database : oefabd
+Port: 1534
+User : CSEPDV
+Pass: vWqFlNPWZQ0Fov
+
+jdbc:oracle:thin:@//odaprod-scan:1534/oefabd
+
+
+###Mysql 
+
+Hot : 10.1.1.217
+Database : gappsdb
+Port: 3306
+User : gapps
+Pass: Knjux4a9tJCbrly!
