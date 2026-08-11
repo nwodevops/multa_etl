@@ -1,6 +1,6 @@
 
 vamos a crear un etl 
-
+h
 Step1) Stagging Area 
 
 -descargar los inputs en el stage de h2 , crea las tablas usa bat/sheell , este tdl se desplegara en windows , pero  estamos en linux de momento ahora 
@@ -116,3 +116,24 @@ SELECT DM.TXNUMEXP AS NUMERO_EXPEDIENTE,
     DECODE(MD.FGSITREG,'1','ACTIVO','0','INACTIVO') AS ESTADO_MULTA
 FROM SISUD.T_MVD_DOCUMENTO_MULTA DM
 INNER JOIN SISUD.T_MVD_MULTA_X_DOCUMENTO MD ON DM.IDDOCUMENTO_MULTA = MD.IDDOCUMENTO_MULTA_DS;
+
+
+
+
+
+
+step2) consolidar
+
+-Me piden consolidar toda la data en una talb nueva, me indican que estas tablas en h2 de staging tienen datos en comun de Multas-
+-conectate a h2, analiza la data, y arma un script  en R  para consolidar la data, 
+
+-al final esa tabla consolidada tiene que estar en este oracle REPOCSEP, crea la tabla las iniciales de la tabla es RPT, en la segunda corrida o en cada ocrrida haces un truncate pero en la primera obvio cras la tabla
+
+crea una tabla en Oralce 
+###Oracle REPOCSEP
+
+Hot : 10.6.0.15
+Database : dvoefacore
+Port: 1532
+User : REPOCSEP
+Pass: desarrollo24
