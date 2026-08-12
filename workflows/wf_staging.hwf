@@ -157,7 +157,8 @@ call h2\scripts\reset_and_create.bat
       <insertScript>Y</insertScript>
       <script>@echo off
 cd /d "${PROJECT_HOME}"
-where Rscript >nul 2>&1 && (
+where Rscript >nul 2>&amp;1
+if not errorlevel 1 (
   Rscript r\main.R
   exit /b %ERRORLEVEL%
 )
