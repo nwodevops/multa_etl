@@ -102,20 +102,22 @@ call h2\scripts\reset_and_create.bat
       <add_time>N</add_time>
       <insertScript>Y</insertScript>
       <script>@echo off
+setlocal enabledelayedexpansion
 cd /d "${PROJECT_HOME}"
+set "RSCRIPT="
 where Rscript >nul 2>&amp;1
-if not errorlevel 1 (
-  Rscript r\main.R 2>&amp;1
-  exit /b %ERRORLEVEL%
-)
-for /d %%D in ("%ProgramFiles%\R\R-*") do (
-  if exist "%%D\bin\Rscript.exe" (
-    "%%D\bin\Rscript.exe" r\main.R 2>&amp;1
-    exit /b %ERRORLEVEL%
+if not errorlevel 1 set "RSCRIPT=Rscript"
+if not defined RSCRIPT (
+  for /d %%D in ("%ProgramFiles%\R\R-*") do (
+    if exist "%%D\bin\Rscript.exe" set "RSCRIPT=%%D\bin\Rscript.exe"
   )
 )
-echo ERROR: no se encontro Rscript. Instala R o agregalo al PATH.
-exit /b 1
+if not defined RSCRIPT (
+  echo ERROR: no se encontro Rscript. Instala R o agregalo al PATH.
+  exit /b 1
+)
+call "!RSCRIPT!" r\main.R 2>&amp;1
+exit /b !ERRORLEVEL!
 </script>
       <loglevel>Basic</loglevel>
       <parallel>N</parallel>
