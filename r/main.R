@@ -90,3 +90,4 @@ escribir_oracle(
 )
 
 message("Listo (H2 -> logica -> REPOCSEP.RPT_MULTA_COERCITIVA).")
+quit(save = "no", status = 0)
