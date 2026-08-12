@@ -98,7 +98,7 @@
         <name>N_PROY_MC</name>
         <position>0</position>
         <length>-1</length>
-        <type>1</type>
+        <type>2</type>
         <INPUT_IGNORE>N</INPUT_IGNORE>
         <format></format>
         <trim_type>0</trim_type>
@@ -476,7 +476,7 @@
         <name>MULTA_UIT</name>
         <position>0</position>
         <length>-1</length>
-        <type>1</type>
+        <type>2</type>
         <INPUT_IGNORE>N</INPUT_IGNORE>
         <format></format>
         <trim_type>0</trim_type>
@@ -490,7 +490,7 @@
         <name>MULTA_S</name>
         <position>0</position>
         <length>-1</length>
-        <type>1</type>
+        <type>2</type>
         <INPUT_IGNORE>N</INPUT_IGNORE>
         <format></format>
         <trim_type>0</trim_type>
@@ -644,7 +644,7 @@
         <name>AUX_FIN_MC</name>
         <position>0</position>
         <length>-1</length>
-        <type>5</type>
+        <type>2</type>
         <INPUT_IGNORE>N</INPUT_IGNORE>
         <format></format>
         <trim_type>0</trim_type>

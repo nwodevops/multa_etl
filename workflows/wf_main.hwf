@@ -103,7 +103,18 @@ call h2\scripts\reset_and_create.bat
       <insertScript>Y</insertScript>
       <script>@echo off
 cd /d "${PROJECT_HOME}"
-"C:\Program Files\R\R-4.3.3\bin\Rscript.exe" r/main.R
+where Rscript >nul 2>&1 && (
+  Rscript r\main.R
+  exit /b %ERRORLEVEL%
+)
+for /d %%D in ("%ProgramFiles%\R\R-*") do (
+  if exist "%%D\bin\Rscript.exe" (
+    "%%D\bin\Rscript.exe" r\main.R
+    exit /b %ERRORLEVEL%
+  )
+)
+echo ERROR: no se encontro Rscript. Instala R o agregalo al PATH.
+exit /b 1
 </script>
       <loglevel>Basic</loglevel>
       <parallel>N</parallel>

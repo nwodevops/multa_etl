@@ -29,7 +29,8 @@ Proyecto ETL en **Apache Hop** (OEFA). No hay build/test/lint: la verificación 
 
 - Zona de pegado `r/logica/` con un solo `.R` (auto-descubierto por `r/main.R`).
 - Ver `r/CONTRATO.md`.
-- Prerequisitos: R 4.3.3 (ruta Rscript hardcodeada en el workflow), paquetes `RJDBC, dplyr, stringr, tidyr, lubridate` en `~/R/library`, `lib/ojdbc11.jar`.
+- Prerequisitos: R en PATH o en `%ProgramFiles%\R\R-*` (el workflow busca `Rscript` solo; no hardcodea 4.3.3), paquetes `RJDBC, dplyr, stringr, tidyr, lubridate`, `lib/ojdbc11.jar`.
+- Google Sheets: campos numéricos van como **String** en Hop (evita crash por `#N/A`); H2 STG_* también VARCHAR en montos. R convierte con `as.numeric`.
 - Destino REPOCSEP ya configurado en `r/io/escribir_oracle.R` / `project-config.json` (`DB_ORA_REPO_*`).
 
 ## H2 (server local, in-memory)
