@@ -159,12 +159,12 @@ call h2\scripts\reset_and_create.bat
 cd /d "${PROJECT_HOME}"
 where Rscript >nul 2>&amp;1
 if not errorlevel 1 (
-  Rscript r\main.R
+  Rscript r\main.R 2>&amp;1
   exit /b %ERRORLEVEL%
 )
 for /d %%D in ("%ProgramFiles%\R\R-*") do (
   if exist "%%D\bin\Rscript.exe" (
-    "%%D\bin\Rscript.exe" r\main.R
+    "%%D\bin\Rscript.exe" r\main.R 2>&amp;1
     exit /b %ERRORLEVEL%
   )
 )
