@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>pl_rpt_informes</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>Hop-only: H2 STG_ORA_CSEP_INFORMES -> REPOCSEP.RPT_INFORME_SUPERVISION (TRUNCATE+INSERT)</description>
+    <extended_description/>
+    <pipeline_version/>
+    <pipeline_type>Normal</pipeline_type>
+    <parameters>
+    </parameters>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <created_user>-</created_user>
+    <created_date>2026/08/13 11:00:00.000</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2026/08/13 11:00:00.000</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
+    <is_key_private>N</is_key_private>
+  </info>
+  <notepads>
+    <notepad>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorred>201</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>Segoe UI</fontname>
+      <fontsize>11</fontsize>
+      <height>80</height>
+      <xloc>32</xloc>
+      <yloc>32</yloc>
+      <note>RPT informes sin R: lee STG_ORA_CSEP_INFORMES, agrega FECHA_CARGA, TRUNCATE+INSERT en REPOCSEP.RPT_INFORME_SUPERVISION.
+Requiere DDL previo (action SQL Ensure RPT Informes DDL en wf_staging).</note>
+      <width>560</width>
+    </notepad>
+  </notepads>
+  <order>
+    <hop>
+      <from>Table Input H2 Informes</from>
+      <to>REPOCSEP RPT Informes</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <transform>
+    <name>Table Input H2 Informes</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>h2</connection>
+    <sql>SELECT CURRENT_TIMESTAMP AS FECHA_CARGA, IDACTIVIDAD, TXMES, TXNUMEXP, TXCUC, TXESTADO, IDADMINISTRADO, TXADMINISTRADO, IDSUBUNIDAD, IDUF_SIG, TXSUBUNIDAD, TXCOORDINACION, TXTIPSUP, TXFUENTE, TXOTRAFUENTE, TXACCION, CAST(FEINICIO AS VARCHAR) AS FEINICIO, CAST(FEFIN AS VARCHAR) AS FEFIN, TXMUESTREO, TXNVL_CMPLJ, TXNVL_CMPLJ_1, TXNVL_CMPLJ_2, TXNVL_CMPLJ_3, TXNOMBRE_RESP_COMISION, TXNOMBRE_RESP_MONITOREO, TXNOMBRE_ANAL_LEGAL, TXNOMBRE_JEFE_ACTIVIDAD, CAST(FEINI_ELAB_INF_ACT AS VARCHAR) AS FEINI_ELAB_INF_ACT, TXNIVELES_REVISION, IDEJECFILE_PRY_INF_MIN, IDEJECFILE_PRY_INF_MAX, IDEJECFILE_INF_MAX, IDTIPOEJEFILE_PRY, IDGRUPO_REVISION, IDEJECFILE_DOC_PREVIO_MAX, CAST(FEPRY_REG_INICIAL AS VARCHAR) AS FEPRY_REG_INICIAL, TXPRY_NIVEL, TXPRY_ESTADO, CAST(FEPRY_REG AS VARCHAR) AS FEPRY_REG, CAST(FEPRY_MOD_ESTADO_ESPERADO AS VARCHAR) AS FEPRY_MOD_ESTADO_ESPERADO, CAST(FEPRY_MOD_ESTADO_REAL AS VARCHAR) AS FEPRY_MOD_ESTADO_REAL, TXINFORME, CAST(FEINFORME_ESPERADO AS VARCHAR) AS FEINFORME_ESPERADO, CAST(FEINFORME AS VARCHAR) AS FEINFORME, CAST(FEREG_INFORME AS VARCHAR) AS FEREG_INFORME, TXRECOMENDACION, TXSUBSECTOR_UND, TX_DOC_DERIVACION, TX_NUM_DOC_DERIVACION, CAST(FE_APROB_DOC_DERIVACION AS VARCHAR) AS FE_APROB_DOC_DERIVACION, CAST(FE_DERIV_DOC_DERIVACION AS VARCHAR) AS FE_DERIV_DOC_DERIVACION, TXAREADESTINO_MEMO_DERIVACION, CAST(FEINI_ELAB_INF AS VARCHAR) AS FEINI_ELAB_INF, TX_DOCUMENTO_PREVIO, TX_NUMERO_DOCUMENTO_PREVIO, CAST(FE_DOCUMENTO_PREVIO AS VARCHAR) AS FE_DOCUMENTO_PREVIO, CAST(FE_REGISTRO_DOCUMENTO_PREVIO AS VARCHAR) AS FE_REGISTRO_DOCUMENTO_PREVIO, TX_OTRO_DOCUMENTO_PREVIO FROM PUBLIC.STG_ORA_CSEP_INFORMES</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <attributes/>
+    <GUI>
+      <xloc>128</xloc>
+      <yloc>128</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>REPOCSEP RPT Informes</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>oracle_repocsep</connection>
+    <schema>REPOCSEP</schema>
+    <table>RPT_INFORME_SUPERVISION</table>
+    <commit>1000</commit>
+    <truncate>Y</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>N</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>N</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <specify_fields>N</specify_fields>
+    <auto_update_table_structure>N</auto_update_table_structure>
+    <always_drop_and_recreate>N</always_drop_and_recreate>
+    <add_columns>N</add_columns>
+    <drop_columns>N</drop_columns>
+    <change_column_types>N</change_column_types>
+    <attributes/>
+    <GUI>
+      <xloc>400</xloc>
+      <yloc>128</yloc>
+    </GUI>
+  </transform>
+  <transform_error_handling>
+  </transform_error_handling>
+  <attributes/>
+</pipeline>

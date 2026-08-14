@@ -35,9 +35,12 @@ No hay build/test/lint: se ejecuta `workflows/wf_main.hwf` en el GUI de Apache H
 ## Staging Area + consolidación — `workflows/wf_staging.hwf`
 
 1. **Google Sheets** (`workflows/load_sheets.hwf` + `client_secret.json`) → `STG_GS1_*`, `STG_GS2_*`.
-2. **Oracle** `SISUD.VW_MULTA_COERCITIVA` → `STG_ORA_*`.
-3. **MySQL** `gappsdb.T_MVC_MULTACOERCITIVA_MC` → `STG_MYSQL_*`.
-4. **R** `consolidar_multas.R`: UNION por `FUENTE` → `REPOCSEP.RPT_MULTA_COERCITIVA` (DDL en `sql/create_ORACLE_RPT_MULTA_COERCITIVA.sql`).
+2. **Oracle** `SISUD.VW_MULTA_COERCITIVA` → `STG_ORA_VW_*`.
+3. **Oracle** `SISUD.CSEP_INFORMES_VIEW` → `STG_ORA_CSEP_INFORMES` → **Hop** `RPT_INFORME_SUPERVISION` (sin R).
+4. **MySQL** `gappsdb.T_MVC_MULTACOERCITIVA_MC` → `STG_MYSQL_*`.
+5. **R** `consolidar_multas.R`: UNION por `FUENTE` → `REPOCSEP.RPT_MULTA_COERCITIVA`.
+
+Skill (Cursor/OpenCode): `.agents/skills/oefa-csep-etl/SKILL.md`. DWH futuro (literal f): `docs/dwh_informes_multas_literal_f.md`.
 
 Prerequisitos Windows: `client_secret.json`, Hop + R 4.3.3, drivers JDBC, red a Oracle/MySQL.
 

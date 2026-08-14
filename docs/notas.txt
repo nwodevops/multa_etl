@@ -133,7 +133,11 @@ IMPLEMENTADO fase 1 (UNION FUENTE):
 - r/logica/consolidar_multas.R apila GS1|GS2|GS_ETAPA|ORA|MYSQL sin JOIN matched
 - destino REPOCSEP.RPT_MULTA_COERCITIVA (sql/create_ORACLE_RPT_MULTA_COERCITIVA.sql)
 - wf_staging.hwf termina en Run R
-- Fase 2 pendiente: limpieza R y puente COD_MA <-> CUM
+- INFORMES (Hop-only, entregable 1): SISUD.CSEP_INFORMES_VIEW -> STG_ORA_CSEP_INFORMES -> REPOCSEP.RPT_INFORME_SUPERVISION
+  (pl_stage_informes.hpl + pl_rpt_informes.hpl; sin R)
+- Skill portable: .agents/skills/oefa-csep-etl/SKILL.md
+- DWH literal f (futuro): docs/dwh_informes_multas_literal_f.md
+- Fase 2 pendiente: limpieza R, puente COD_MA <-> CUM, cruce informes<->multas (entregable 2)
 
 crea una tabla en Oralce 
 ###Oracle REPOCSEP
