@@ -14,7 +14,7 @@ if %ERRORLEVEL%==0 (
 )
 
 echo Levantando H2 TCP+WEB...
-start "H2-Server" /MIN java -cp "%H2_JAR%" org.h2.tools.Server -tcp -web -webPort 8082 -tcpPort %H2_PORT% -ifNotExists >nul 2>&1
+start "H2-Server" /MIN java -cp "%H2_JAR%" org.h2.tools.Server -tcp -web -tcpAllowOthers -webAllowOthers -webPort 8082 -tcpPort %H2_PORT% -ifNotExists >nul 2>&1
 
 set /a _i=0
 :wait_loop
